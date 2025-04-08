@@ -18,7 +18,6 @@ function plotTrajectory(X, t, m1, m2, d)
         plot(a(1),a(2),'Color','green',Marker='x',MarkerFaceColor='green',MarkerSize=5)
         ylim([min(X(:,2)) max(X(:,2))])
         axis equal
-        ylim([min(X(:,2)) max(X(:,2))])
         hold on
         line([a(1) b(1)],[a(2) b(2)],'color','black')
         plot(b(1),b(2),'Color','blue',Marker='x',MarkerFaceColor='blue',MarkerSize=5)

@@ -30,3 +30,5 @@ disp(dx5_sym);
 disp(dx6_sym);
 
 ukol2(g, m1, m2, d, t0, tf, x0);
+
+[xf, end_conds] = compute_end_state(d/2);

@@ -35,26 +35,42 @@ function ukol2(g, m1, m2, d, t0, tf, x0)
 %     plot(t_sim1, X_sim1(:,6), 'LineWidth', 1.5);
 %     xlabel('Čas t'); ylabel('x_6');
 %     title('TC1 (Nulový vstup): Časový průběh x_6');
-        figure;
-    subplot(3,1,1);
+    figure;
+    subplot(6,1,1);
     plot(t_sim1, X_sim1(:,1), 'LineWidth', 1.5);
-    xlabel('Čas t'); ylabel('x_1');
-    title('TC1 (Nulový vstup): Časový průběh x_1');
+    xlabel('Čas [s]'); ylabel('x_1 [m]');
+    title(' Časový průběh x_1');
     
-    subplot(3,1,2);
+    subplot(6,1,2);
+    plot(t_sim1, X_sim1(:,2), 'LineWidth', 1.5);
+    xlabel('Čas [s]'); ylabel('x_2 [m]');
+    title(' Časový průběh x_2');
+    
+    subplot(6,1,3);
     plot(t_sim1, X_sim1(:,3), 'LineWidth', 1.5);
-    xlabel('Čas t'); ylabel('x_3');
-    title('TC1 (Nulový vstup): Časový průběh x_3');
+    xlabel('Čas [s]'); ylabel('x_3 [rad]');
+    title(' Časový průběh x_3');
     
-    subplot(3,1,3);
+    subplot(6,1,4);
+    plot(t_sim1, X_sim1(:,4), 'LineWidth', 1.5);
+    xlabel('Čas [s]'); ylabel('x_4 [m/s]');
+    title(' Časový průběh x_4');
+    
+    subplot(6,1,5);
+    plot(t_sim1, X_sim1(:,5), 'LineWidth', 1.5);
+    xlabel('Čas [s]'); ylabel('x_5 [m/s]');
+    title(' Časový průběh x_5');
+    
+    subplot(6,1,6);
     plot(t_sim1, X_sim1(:,6), 'LineWidth', 1.5);
-    xlabel('Čas t'); ylabel('x_6');
-    title('TC1 (Nulový vstup): Časový průběh x_6');
+    xlabel('Čas [s]'); ylabel('x_6 [rad/s]');
+    title(' Časový průběh x_6');
+
     figure;
     plot(X_sim1(:,1), X_sim1(:,2), 'LineWidth', 1.5);
     xlabel('Horizontální poloha (x_1)');
     ylabel('Vertikální poloha (x_2)');
-    title('TC1: Trajektorie duokoptéry');
+    title(' Trajektorie duokoptéry');
     grid on;
     
     %% Testovací signál utest,2
@@ -64,7 +80,7 @@ function ukol2(g, m1, m2, d, t0, tf, x0)
     % Pokud v počátečním stavu platí sin(x0(3)) ≈ 0, lze volit u2 = (m2/m1)*u1.
     % Jinak "ideální" signál neexistuje a volíme např. utest,2 = [1; 1].
     if abs(sin(x0(3))) < 1e-6
-        u1_2 = 1;
+        u1_2 = 10;
         u2_2 = (m2/m1)*u1_2;
     else
         u1_2 = 1;
@@ -82,52 +98,56 @@ function ukol2(g, m1, m2, d, t0, tf, x0)
 %     subplot(3,1,1);
 %     plot(t_sim2, X_sim2(:,1), 'LineWidth', 1.5);
 %     xlabel('Čas t'); ylabel('x_1');
-%     title('TC2: Časový průběh x_1');
+%     title(' Časový průběh x_1');
 %     
 %     subplot(3,1,2);
 %     plot(t_sim2, X_sim2(:,3), 'LineWidth', 1.5);
 %     xlabel('Čas t'); ylabel('x_3');
-%     title('TC2: Časový průběh x_3');
+%     title(' Časový průběh x_3');
 %     
 %     subplot(3,1,3);
 %     plot(t_sim2, X_sim2(:,6), 'LineWidth', 1.5);
 %     xlabel('Čas t'); ylabel('x_6');
-%     title('TC2: Časový průběh x_6');
+%     title(' Časový průběh x_6');
     figure;
     subplot(6,1,1);
     plot(t_sim2, X_sim2(:,1), 'LineWidth', 1.5);
     xlabel('Čas [s]'); ylabel('x_1 [m]');
-    title('TC2: Časový průběh x_1');
+    title(' Časový průběh x_1');
     
     subplot(6,1,2);
     plot(t_sim2, X_sim2(:,2), 'LineWidth', 1.5);
     xlabel('Čas [s]'); ylabel('x_2 [m]');
-    title('TC2: Časový průběh x_2');
+    title(' Časový průběh x_2');
     
     subplot(6,1,3);
     plot(t_sim2, X_sim2(:,3), 'LineWidth', 1.5);
     xlabel('Čas [s]'); ylabel('x_3 [rad]');
-    title('TC2: Časový průběh x_3');
+    title(' Časový průběh x_3');
     
     subplot(6,1,4);
     plot(t_sim2, X_sim2(:,4), 'LineWidth', 1.5);
     xlabel('Čas [s]'); ylabel('x_4 [m/s]');
-    title('TC2: Časový průběh x_4');
+    title(' Časový průběh x_4');
     
     subplot(6,1,5);
     plot(t_sim2, X_sim2(:,5), 'LineWidth', 1.5);
     xlabel('Čas [s]'); ylabel('x_5 [m/s]');
-    title('TC2: Časový průběh x_5');
+    title(' Časový průběh x_5');
     
     subplot(6,1,6);
     plot(t_sim2, X_sim2(:,6), 'LineWidth', 1.5);
     xlabel('Čas [s]'); ylabel('x_6 [rad/s]');
-    title('TC2: Časový průběh x_6');
+    title(' Časový průběh x_6');
 
     figure;
     plot(X_sim2(:,1), X_sim2(:,2), 'LineWidth', 1.5);
     xlabel('Horizontální poloha (x_1)');
     ylabel('Vertikální poloha (x_2)');
-    title('TC2: Trajektorie duokoptéry');
+    title(' Trajektorie duokoptéry');
     grid on;
+    
+    hold off;
+    figure;
+    plotTrajectory(X_sim2,t_sim2,m1,m2,d)
 end

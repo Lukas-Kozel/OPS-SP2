@@ -1,4 +1,4 @@
-function [xf, end_conds] = compute_end_state(r)
+function [xf, end_conds] = compute_end_state(r, m1, m2)
 %
 % Vstupní argumenty:
 %   r  - (scalar) Vzdálenost mezi těžištěm a geometrickým středem duokoptéry [m].
@@ -22,7 +22,7 @@ x3_dot_des = 0;   % zmena orientace ma byt nulova
 %   x_C = x_T + r*[cos(x3); sin(x3)]
 % Proto inverzní vztah je:
 %   x_T = x_C - r*[cos(x3); sin(x3)]
-xT_des = xC_des - r * [cos(x3_des); sin(x3_des)];
+xT_des = xC_des - (m1-m2)/(m1+m2) *r * [cos(x3_des); sin(x3_des)];
 
 % Předpokládáme, že rychlost těžiště je stejná jako rychlost geometrického středu.
 vT_des = vC_des;

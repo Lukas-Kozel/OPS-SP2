@@ -31,7 +31,7 @@ disp(dx6_sym);
 
 ukol2(g, m1, m2, d, t0, tf, x0);
 
-[xf, end_conds] = compute_end_state(d/2);
+[xf, end_conds] = compute_end_state(d/2, m1,m2);
 
 %% Linearizace okolo rovnovážného bodu
 % Rovnovážný stav (x_e) a vstup (u_e)

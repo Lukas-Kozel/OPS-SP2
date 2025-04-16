@@ -31,7 +31,7 @@ disp(dx6_sym);
 
 ukol2(g, m1, m2, d, t0, tf, x0);
 
-[xf, end_conds] = compute_end_state(d/2, m1,m2);
+[xf, end_conds] = compute_end_state(d/2);
 
 %% Linearizace okolo rovnovážného bodu
 % Rovnovážný stav (x_e) a vstup (u_e)
@@ -113,3 +113,81 @@ plot(x_ref(1), x_ref(2), 'gx', 'MarkerSize',10, 'LineWidth',2);
 grid on;
 xlabel('x1'); ylabel('x2');
 title('Trajektorie duokoptéry – sledování referenčního bodu');
+
+
+%% Úkol 5 - stanovení optimálního řízení
+% Symbolicka priprava
+clc
+close all
+syms x [6 1] real
+syms m1_syms m2_syms d_syms g_syms real
+syms u1_sym u2_sym real
+syms lambda_sym [6 1] real
+
+% Dynamika
+dx1 = x(4);
+dx2 = x(5);
+dx3 = x(6);
+dx4 = -( sin(x(3))*(u1_sym+u2_sym) )/(m1_syms+m2_syms);
+dx5 = -g_syms + ( cos(x(3))*(u1_sym+u2_sym) )/(m1_syms+m2_syms);
+dx6 = ( u1_sym/(m1_syms*d_syms) ) - ( u2_sym/(m2_syms*d_syms) );
+dx_sym = [dx1; dx2; dx3; dx4; dx5; dx6];
+
+% Hamiltonian
+u_sym = [u1_sym; u2_sym];
+Hamil = 0.5 * (u1_sym^2 + u2_sym^2) + lambda_sym' * dx_sym;
+
+% Derivace Hamiltonianu podle x
+H_x = -jacobian(Hamil, x).';
+
+%matlabFunction(H_x, 'Vars', {x, lambda_sym, u1_sym, u2_sym, g_syms, m1_syms, m2_syms, d_syms}, 'File', 'duocopterCostate');
+
+
+% Boundary conditions
+[xf, ~] = compute_end_state(d*(0.5-m1/(m1+m2)));
+bcfun = @(ya, yb) [ya(1:6) - x0; yb(1:6) - xf];
+
+% Initial guess - lambda dělá problémy
+solinit = bvpinit(linspace(t0, tf, 40), @(t) [x0; [1.5; -0.2; 0; 0.05; 0; 0.02]]);
+
+options = bvpset('RelTol', 1e-4, 'AbsTol', 1e-6, 'NMax', 2e4, 'Stats', 'on');
+sol = bvp4c(@(t,y) duocopterOptimalOde(t,y,g,m1,m2,d), ...
+            bcfun, ...
+            solinit,options);
+
+t = sol.x;
+y = sol.y;
+x = y(1:6, :);
+lambda = y(7:12, :);
+
+% Compute control
+u = zeros(2, length(t));
+for i = 1:length(t)
+    u(:, i) = optimalU(d, lambda(4,i), lambda(5,i), lambda(6,i), m1, m2, x(3,i));
+end
+
+Hamilton = 0.5*sum(u.^2,1)+sum(lambda .* x, 1);
+
+xT = x';
+plotTrajectory(xT(1:50:end,:), t(1:50:end), m1, m2, d, 0.01)
+
+figure;
+plot(t,x)
+title('Stavy');
+
+figure;
+plot(t,lambda)
+title('Lagrangeovy multiplikátory');
+
+figure;
+plot(t,Hamilton)
+title('Hamilton');
+
+figure;
+plot(t, u');
+xlabel('t'); ylabel('u');
+title('Optimální řízení');
+legend('u_1','u_2');
+
+%funkce byla upravena - jen jeden výstupní vektor u, jinak to matlab mentálně nezvládne
+%matlabFunction(solve(jacobian(Hamil, u_sym),u).u1_sym, solve(jacobian(Hamil, u_sym),u).u2_sym,"File","optimalU") 

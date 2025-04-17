@@ -144,13 +144,15 @@ H_x = -jacobian(Hamil, x).';
 
 
 % Boundary conditions
-[xf, ~] = compute_end_state(d*(0.5-m1/(m1+m2)));
+[xf, ~] = compute_end_state(d*(0.5-m1/(m1+m2)),m1,m2);
 bcfun = @(ya, yb) [ya(1:6) - x0; yb(1:6) - xf];
 
 % Initial guess - lambda dělá problémy
-solinit = bvpinit(linspace(t0, tf, 40), @(t) [x0; [1.5; -0.2; 0; 0.05; 0; 0.02]]);
+lambda0 = [0.01; 0.2; -1; -0.03; -4; 0.22]%4*rand(6,1)-2%[0.01; 0.2; -1; -0.03; -4; 0.22];
+%lambda0(5) = 1;
+solinit = bvpinit(linspace(t0, tf, 40), @(t) [x0; lambda0]);
 
-options = bvpset('RelTol', 1e-4, 'AbsTol', 1e-6, 'NMax', 2e4, 'Stats', 'on');
+options = bvpset('RelTol', 1e-6, 'AbsTol', 1e-6, 'NMax', 2e4, 'Stats', 'on');
 sol = bvp4c(@(t,y) duocopterOptimalOde(t,y,g,m1,m2,d), ...
             bcfun, ...
             solinit,options);
@@ -158,6 +160,7 @@ sol = bvp4c(@(t,y) duocopterOptimalOde(t,y,g,m1,m2,d), ...
 t = sol.x;
 y = sol.y;
 x = y(1:6, :);
+dx = sol.yp(1:6,:);
 lambda = y(7:12, :);
 
 % Compute control
@@ -166,24 +169,28 @@ for i = 1:length(t)
     u(:, i) = optimalU(d, lambda(4,i), lambda(5,i), lambda(6,i), m1, m2, x(3,i));
 end
 
-Hamilton = 0.5*sum(u.^2,1)+sum(lambda .* x, 1);
+Hamilton = 0.5*sum(u.^2,1)+sum(lambda .* dx, 1);
+H = (Hamilton - Hamilton(1))/Hamilton(1);
 
 xT = x';
-plotTrajectory(xT(1:50:end,:), t(1:50:end), m1, m2, d, 0.01)
+n =  round(0.01*length(xT));
+plotTrajectory(xT(1:n:end,:), t(1:n:end), m1, m2, d, 0.01)
 
-figure;
+figure(OuterPosition=[50, 700, 600, 500]);
 plot(t,x)
 title('Stavy');
+legend('1','2','3','4','5','6')
 
-figure;
+figure(OuterPosition=[50, 200, 600, 500]);
 plot(t,lambda)
 title('Lagrangeovy multiplikátory');
+legend('1','2','3','4','5','6')
 
-figure;
-plot(t,Hamilton)
+figure(OuterPosition=[1250, 700, 600, 500]);
+plot(t,H)
 title('Hamilton');
 
-figure;
+figure(OuterPosition=[1250, 200, 600, 500]);
 plot(t, u');
 xlabel('t'); ylabel('u');
 title('Optimální řízení');

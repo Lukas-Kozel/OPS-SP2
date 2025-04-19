@@ -11,7 +11,7 @@ m2 = m(2);
 %   ẋ₁ = x₄,
 %   ẋ₂ = x₅,
 %   ẋ₃ = x₆,
-%   ẋ₄ = ( sin(x₃)*(u₁ + u₂) )/(m₁ + m₂),
+%   ẋ₄ = -( sin(x₃)*(u₁ + u₂) )/(m₁ + m₂),
 %   ẋ₅ = - g + ( cos(x₃)*(u₁ + u₂) )/(m₁ + m₂),
 %   ẋ₆ = ( u₁/(m₁*d) ) - ( u₂/(m₂*d) )
 syms x1 x2 x3 x4 x5 x6 u1_sym u2_sym
@@ -31,7 +31,7 @@ disp(dx6_sym);
 
 ukol2(g, m1, m2, d, t0, tf, x0);
 
-[xf, end_conds] = compute_end_state(d/2);
+[xf, end_conds] = compute_end_state(d/2, m1,m2);
 
 %% Linearizace okolo rovnovážného bodu
 % Rovnovážný stav (x_e) a vstup (u_e)
@@ -179,19 +179,23 @@ plotTrajectory(xT(1:n:end,:), t(1:n:end), m1, m2, d, 0.01)
 figure(OuterPosition=[50, 700, 600, 500]);
 plot(t,x)
 title('Stavy');
+grid on;
 legend('1','2','3','4','5','6')
 
 figure(OuterPosition=[50, 200, 600, 500]);
 plot(t,lambda)
+grid on;
 title('Lagrangeovy multiplikátory');
 legend('1','2','3','4','5','6')
 
 figure(OuterPosition=[1250, 700, 600, 500]);
 plot(t,H)
+grid on;
 title('Hamilton');
 
 figure(OuterPosition=[1250, 200, 600, 500]);
 plot(t, u');
+grid on;
 xlabel('t'); ylabel('u');
 title('Optimální řízení');
 legend('u_1','u_2');

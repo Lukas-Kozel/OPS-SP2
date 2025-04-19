@@ -79,15 +79,17 @@ function ukol2(g, m1, m2, d, t0, tf, x0)
     %   dx4 = ( sin(x3)*(u1+u2) )/(m1+m2)  a  dx6 = (u1/(m1*d)) - (u2/(m2*d)).
     % Pokud v počátečním stavu platí sin(x0(3)) ≈ 0, lze volit u2 = (m2/m1)*u1.
     % Jinak "ideální" signál neexistuje a volíme např. utest,2 = [1; 1].
-    if abs(sin(x0(3))) < 1e-6
-        u1_2 = 10;
-        u2_2 = (m2/m1)*u1_2;
-    else
-        u1_2 = 1;
-        u2_2 = 1;
-    end
-%     u1_2 = 3;
-%     u2_2 = 2;
+
+    syms u1 u2 real
+    eq1 = -sin(x0(3))*(u1 + u2)/(m1 + m2)      == 0;
+    eq2 = -g   + cos(x0(3))*(u1 + u2)/(m1 + m2) == 0;
+    eq3 = u1/(m1*d) - u2/(m2*d)               == 0;
+    S = solve([eq1,eq2,eq3],[u1,u2],'IgnoreProperties',true);
+    
+    u1_2 = double(S.u1);
+    disp(u1_2);
+    u2_2 = double(S.u2);
+    disp(u2_2);
     utest2 = [u1_2; u2_2];
     disp('Testovací signál utest,2 = ');
     disp(utest2);
@@ -110,6 +112,7 @@ function ukol2(g, m1, m2, d, t0, tf, x0)
 %     xlabel('Čas t'); ylabel('x_6');
 %     title(' Časový průběh x_6');
     figure;
+    title('nenulový testovací signál')
     subplot(6,1,1);
     plot(t_sim2, X_sim2(:,1), 'LineWidth', 1.5);
     xlabel('Čas [s]'); ylabel('x_1 [m]');
@@ -149,5 +152,5 @@ function ukol2(g, m1, m2, d, t0, tf, x0)
     
     hold off;
     figure;
-    plotTrajectory(X_sim2,t_sim2,m1,m2,d)
+%     plotTrajectory(X_sim2,t_sim2,m1,m2,d)
 end
